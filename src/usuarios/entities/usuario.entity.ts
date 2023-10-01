@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { type } from "os";
+import { Role } from "src/roles/entities/role.entity";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({})
 export class Usuario {
@@ -12,12 +14,13 @@ export class Usuario {
     password: string;
     @Column()
     phone: number;
-    // TO-DO
-    role;
+    @OneToOne(type => Role, role => role.name, { cascade: true })
+    @JoinColumn({ name: 'rol_id' })
+    role: Role;
     @Column()
     is_delete: Boolean;
-    @Column()
+    @CreateDateColumn()
     created_at: Date;
-    @Column()
+    @UpdateDateColumn()
     update_at: Date;
 }
