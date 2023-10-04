@@ -2,9 +2,8 @@ import { Role } from "src/modules/role/entities/role.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity({})
-@Unique(['email'])
 export class User {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     id: number;
 
     @Column()
@@ -22,7 +21,7 @@ export class User {
     @Column({ default: false })
     is_delete: Boolean;
     
-    @OneToOne(() => Role)
+    @OneToOne(() => Role, (role) => role.user)
     @JoinColumn()
     role: Role;    
 

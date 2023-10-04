@@ -6,14 +6,18 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateUpdateRoleDto } from './dto/create-update-role.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Role } from './entities/role.entity';
 import { Constantes } from '../utils/Contants';
+import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 
+@ApiBearerAuth()
 @ApiTags('Roles')
+@UseGuards(JwtAuthGuard)
 @Controller('role')
 export class RoleController {
   constructor(private readonly rolesService: RoleService) {}

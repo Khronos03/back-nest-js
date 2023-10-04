@@ -1,5 +1,5 @@
 import { User } from "src/modules/user/entities/user.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({})
 export class Role {
@@ -12,8 +12,9 @@ export class Role {
     @Column({ default: false })
     is_delete: Boolean;
     
-    @OneToOne(() => User, user => user.role)
-    user: User;  
+    @OneToOne(() => User, (user) => user.role)
+    @JoinColumn()
+    user: User;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     created_at: Date;

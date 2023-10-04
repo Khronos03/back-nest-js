@@ -9,6 +9,7 @@ import { User } from './entities/user.entity';
 import { Not, Repository } from 'typeorm';
 import { Role } from '../role/entities/role.entity';
 import { Constantes } from '../utils/Contants';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -21,17 +22,19 @@ export class UserService {
 
   async createUser(userData: CreateUpdateUserDto): Promise<User> {
     await this.checkIfEmailExists(userData.email);
+    const hashedPassword = await bcrypt.hash(userData.password, 12);
 
     const user = this.userRepository.create({
       full_name: userData.full_name,
       email: userData.email,
-      password: userData.password,
+      password: hashedPassword,
       phone: userData.phone,
     });
+
     if (userData.role) {
       const role = await this.roleRepository.findOne({
         where: { id: userData.role },
-      });
+      });      
       if (role) {
         user.role = role;
       }
@@ -76,4 +79,8 @@ export class UserService {
       throw new ConflictException(Constantes.CORREO_EXISTENTE);
     }
   }
+
+  async findOneEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({where: {email: email}});
+  }  
 }
