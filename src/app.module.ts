@@ -1,22 +1,27 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsuariosModule } from './usuarios/usuarios.module';
-import { RolesModule } from './roles/roles.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './modules/user/user.module';
+import { RoleModule } from './modules/role/role.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [UsuariosModule, RolesModule, TypeOrmModule.forRoot({
-    type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'admin',
-    password: 'mypassword',
-    database: 'postgres',
-    autoLoadEntities: true,
-    synchronize: true
-  })],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST', 'localhost'),
+        port: configService.get('DB_PORT', 5432),
+        username: configService.get('DB_USERNAME', 'admin'),
+        password: configService.get('DB_PASSWORD', 'mypassword'),
+        database: configService.get('DB_DATABASE', 'postgres'),
+        autoLoadEntities: true,
+        synchronize: configService.get('DB_SYNCHRONIZE', true),
+      }),
+      inject: [ConfigService],
+    }),
+    UserModule,
+    RoleModule,
+  ],
 })
 export class AppModule {}
